@@ -14,6 +14,6 @@ Its a example kernel module which you can use to fuzz with syzkaller.
 umm, you need to figure it out at your own. I will plan to create a video/blog later on.
 
 ## I want to contribute.
-Sure, please send PR.
+Sure, please send PR. 
 
-## Note: This may contains some bugs, may not work as expected, i have quickly developed it to test syzkaller at my end.
+#### Note: This may contains some bugs, may not work as expected, i have quickly developed it to test syzkaller at my end.
