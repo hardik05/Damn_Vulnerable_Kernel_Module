@@ -16,3 +16,4 @@ umm, you need to figure it out at your own. I will plan to create a video/blog l
 ## I want to contribute.
 Sure, please send PR.
 
+## Note: This may contains some bugs, may not work as expected, i have quickly developed it to test syzkaller at my end.
