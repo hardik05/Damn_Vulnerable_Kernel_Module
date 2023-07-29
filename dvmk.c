@@ -14,6 +14,8 @@ Web: http://hardik05.wordpress.com
 #include <linux/uaccess.h>
 #include <asm/uaccess.h>
 
+#define PRINTK(level, fmt, ...) \
+	printk(KERN_##level "%s: " fmt, THIS_MODULE->name, ##__VA_ARGS__)
 
 #define INFO(fmt, ...) PRINTK(INFO, fmt, ##__VA_ARGS__)
 
@@ -159,6 +161,10 @@ noinline long dvkm_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		pr_info("****Triggering Integer Overflow****\n");
 		status = Integer_Overflow_IOCTL_Handler(arg_user);
 		break;
+	case DVKM_IOCTL_INTEGER_UNDERFLOW:
+		pr_info("****Triggering Integer Underflow****\n");
+		status = Integer_Underflow_IOCTL_Handler(arg_user);
+		break;
 	case DVKM_IOCTL_STACK_BUFFER_OVERFLOW:
 		pr_info("****Triggering Stack Buffer Overflow****\n");
 		status = Stack_Buffer_Overflow_IOCTL_Handler(arg_user);
@@ -217,3 +223,4 @@ module_exit(dvkm_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Hardik Shah, @hardik05");
 MODULE_DESCRIPTION("Damn Vulnerable kernel module");
+
