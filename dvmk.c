@@ -42,36 +42,71 @@ Web: http://hardik05.wordpress.com
 //in out buffer
 struct dvkm_obj {
 	int width;
-	int height;	
+	int height;
 	int datasize;
-	char *data;	
-};
+	char *data;
+} k_dvkm_obj;
 
 //Heap buffer overflow
 int Heap_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 {
-	char *kernel_buffer;
+	
+	char *kernel_buffer,*kernel_data_buffer;
+	
+	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.	
 
-	kernel_buffer =
-		(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.
-
-	if(copy_from_user(kernel_buffer, io->data, io->datasize))
-	{
-		INFO("[+] Copy from user failed..\n");		
+	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
 	}
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	if(k_dvkm_obj.datasize <= 0)
+	{
+		return 0;
+	}
+	kernel_data_buffer = (char *)kmalloc(k_dvkm_obj.datasize, GFP_KERNEL); //we allocate memory here.
+	if(!kernel_data_buffer){
+		INFO("[+] kmalloc failed..\n");
+		return 0;
+	}
+
+	if (copy_from_user(kernel_data_buffer, k_dvkm_obj.data, k_dvkm_obj.datasize)) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}	
+	INFO("[+] data: %s\n", kernel_data_buffer);	
+	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
 	return 0;
 }
 
 //Stack buffer overflow
 noinline int Stack_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 {
-	char kernel_buffer[10];	
-	//INFO("[+] Data Length: %d\n", io->datasize);	
+	char kernel_buffer[10] = {0};
+	char *kernel_data_buffer;
+	//INFO("[+] Data Length: %d\n", io->datasize);
+
 	
-	if(copy_from_user(kernel_buffer, io->data, io->datasize))
-	{
-		INFO("[+] Copy from user failed..\n");		
+	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
 	}
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	if(k_dvkm_obj.datasize <= 0)
+	{
+		return 0;
+	}
+	kernel_data_buffer = (char *)kmalloc(k_dvkm_obj.datasize, GFP_KERNEL); //we allocate memory here.
+	if(!kernel_data_buffer){
+		INFO("[+] kmalloc failed..\n");
+		return 0;
+	}
+	if (copy_from_user(kernel_data_buffer, k_dvkm_obj.data, k_dvkm_obj.datasize)) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}	
+	INFO("[+] data: %s\n", k_dvkm_obj.data);	
+	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
 	return 0;
 }
 
@@ -79,14 +114,32 @@ noinline int Stack_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 {
 	int width, height, datasize, size;
-	char *data, *kernel_buffer;
+	char *kernel_buffer, *kernel_data_buffer;
 	int status = -EINVAL;
 	size = 0xFFFFFFFF;
 
-	width = io->width;
-	height = io->height;
-	data = io->data;
-	datasize =io->datasize;
+	
+	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}	
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	if(k_dvkm_obj.datasize <= 0)
+	{
+		return 0;
+	}	
+	kernel_data_buffer = (char *)kmalloc(k_dvkm_obj.datasize, GFP_KERNEL); //we allocate memory here.
+	if(!kernel_data_buffer){
+		INFO("[+] kmalloc failed..\n");
+		return 0;
+	}
+	if (copy_from_user(kernel_data_buffer, k_dvkm_obj.data, k_dvkm_obj.datasize)) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}
+	width = k_dvkm_obj.width;
+	height = k_dvkm_obj.height;	
+	datasize = k_dvkm_obj.datasize;
 
 	if (width == 0)
 		return 0;
@@ -95,17 +148,15 @@ int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 
 	INFO("[+] width: %d\n", width);
 	INFO("[+] Height: %d\n", height);
-
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	INFO("[+] data: %s\n", kernel_data_buffer);	
 	size = size + width + height; //integer overflow here
 
-	INFO("[+] size: %d\n", size);
+	INFO("[+] calculated size: %d\n", size);
 
 	kernel_buffer =
 		(char *)kmalloc(size, GFP_KERNEL); //we allocate memory here.
-	if(copy_from_user(kernel_buffer, io->data, io->datasize))
-	{
-		INFO("[+] Copy from user failed..\n");		
-	}
+		memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
 	return status;
 }
 
@@ -113,14 +164,31 @@ int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 int Integer_Underflow_IOCTL_Handler(struct dvkm_obj *io)
 {
 	int width, height, datasize, size;
-	char *data, *kernel_buffer;
+	char *kernel_buffer,*kernel_data_buffer;
 	int status = -EINVAL;
 	size = -0x80000000;
 
-	width = io->width;
-	height = io->height;
-	data = io->data;
-	datasize =io->datasize;
+	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	if(k_dvkm_obj.datasize <= 0)
+	{
+		return 0;
+	}
+	kernel_data_buffer = (char *)kmalloc(k_dvkm_obj.datasize, GFP_KERNEL); //we allocate memory here.
+	if(!kernel_data_buffer){
+		INFO("[+] kmalloc failed..\n");
+		return 0;
+	}
+	if (copy_from_user(kernel_data_buffer, k_dvkm_obj.data, k_dvkm_obj.datasize)) {
+		INFO("[+] Copy from user failed..\n");
+		return 0;
+	}
+	width = k_dvkm_obj.width;
+	height = k_dvkm_obj.height;	
+	datasize = k_dvkm_obj.datasize;
 
 	if (width == 0)
 		return 0;
@@ -129,34 +197,33 @@ int Integer_Underflow_IOCTL_Handler(struct dvkm_obj *io)
 
 	INFO("[+] width: %d\n", width);
 	INFO("[+] Height: %d\n", height);
+	INFO("[+] datasize: %d\n", k_dvkm_obj.datasize);
+	INFO("[+] data: %s\n", kernel_data_buffer);	
 
 	size = size - width - height; //integer overflow here
 
-	INFO("[+] size: %d\n", size);
+	INFO("[+] calculated size: %d\n", size);
 
 	kernel_buffer =
 		(char *)kmalloc(size, GFP_KERNEL); //we allocate memory here.
-	if(copy_from_user(kernel_buffer, io->data, io->datasize))
-	{
-		INFO("[+] Copy from user failed..\n");		
-	}
+		memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
 	return status;
 }
 
 //IOCTL handler, this calls various vulnerable functions.
 noinline long dvkm_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
-	int status = -EINVAL;	
+	int status = -EINVAL;
 	void __user *arg_user;
 
-	if (arg==0) {
+	if (arg == 0) {
 		return 0;
 	}
-	
+
 	arg_user = (void __user *)arg;
-	//pr_info("****ioctl: cmd: %08x, arg: %p****\n", cmd, arg_user);	
+	//pr_info("****ioctl: cmd: %08x, arg: %p****\n", cmd, arg_user);
 	//INFO("===Command is:0x%x====\n",cmd);
-	switch (cmd) {		
+	switch (cmd) {
 	case DVKM_IOCTL_INTEGER_OVERFLOW:
 		pr_info("****Triggering Integer Overflow****\n");
 		status = Integer_Overflow_IOCTL_Handler(arg_user);
@@ -169,7 +236,7 @@ noinline long dvkm_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 		pr_info("****Triggering Stack Buffer Overflow****\n");
 		status = Stack_Buffer_Overflow_IOCTL_Handler(arg_user);
 		break;
-		
+
 	case DVKM_IOCTL_HEAP_BUFFER_OVERFLOW:
 		pr_info("****Triggering Heap Buffer Overflow****\n");
 		status = Heap_Buffer_Overflow_IOCTL_Handler(arg_user);
@@ -223,4 +290,3 @@ module_exit(dvkm_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Hardik Shah, @hardik05");
 MODULE_DESCRIPTION("Damn Vulnerable kernel module");
-
