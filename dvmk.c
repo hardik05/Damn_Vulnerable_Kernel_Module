@@ -37,6 +37,7 @@ Web: http://hardik05.wordpress.com
 #define DVKM_IOCTL_USE_DOUBLE_FREE IOCTL(0xB)
 #define DVKM_IOCTL_NULL_POINTER_DEREFRENCE IOCTL(0xC)
 
+#define BUFFER_LEN 10
 
 //in out buffer
 struct dvkm_obj {
@@ -49,13 +50,8 @@ struct dvkm_obj {
 //use after free
 int Use_after_free_IOCTL_Handler(struct dvkm_obj *io)
 {	
-	char *kernel_buffer,*kernel_data_buffer;
+	char *kernel_data_buffer;		
 	
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.	
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** copy from user failed..\n");
 		return 0;
@@ -75,9 +71,7 @@ int Use_after_free_IOCTL_Handler(struct dvkm_obj *io)
 		INFO("[+] **Data** Copy from user failed..\n");
 		return 0;
 	}	
-	INFO("[+] data: %s\n", kernel_data_buffer);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
-	kfree(kernel_buffer);
+	INFO("[+] data: %s\n", kernel_data_buffer);			
 	kfree(kernel_data_buffer);
 	//trigger use after free
 	kernel_data_buffer = "A";
@@ -87,13 +81,8 @@ int Use_after_free_IOCTL_Handler(struct dvkm_obj *io)
 //double free
 int Double_free_IOCTL_Handler(struct dvkm_obj *io)
 {	
-	char *kernel_buffer,*kernel_data_buffer;
+	char *kernel_data_buffer;		
 	
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.	
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** copy from user failed..\n");
 		return 0;
@@ -113,12 +102,10 @@ int Double_free_IOCTL_Handler(struct dvkm_obj *io)
 		INFO("[+] **Data** Copy from user failed..\n");
 		return 0;
 	}	
-	INFO("[+] data: %s\n", kernel_data_buffer);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
-	kfree(kernel_buffer);
+	INFO("[+] data: %s\n", kernel_data_buffer);			
 	kfree(kernel_data_buffer);
 	//trigger double free
-	kfree(kernel_buffer);
+	kfree(kernel_data_buffer);
 	return 0;
 }
 
@@ -161,13 +148,8 @@ int Heap_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 //Heap oobr
 int Heap_OOBR_IOCTL_Handler(struct dvkm_obj *io)
 {	
-	char *kernel_buffer,*kernel_data_buffer, *data;
+	char *kernel_data_buffer, *data;		
 	
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.	
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** copy from user failed..\n");
 		return 0;
@@ -187,25 +169,17 @@ int Heap_OOBR_IOCTL_Handler(struct dvkm_obj *io)
 		INFO("[+] **Data** Copy from user failed..\n");
 		return 0;
 	}	
-	INFO("[+] data: %s\n", kernel_data_buffer);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
+	INFO("[+] data: %s\n", kernel_data_buffer);		
 	//trigger oobr
-	data = kernel_buffer + 20;
-	kfree(kernel_buffer);
+	data = kernel_data_buffer + k_dvkm_obj.datasize + 20;
 	kfree(kernel_data_buffer);
 	return 0;
 }
 //Heap oobw
 int Heap_OOBW_IOCTL_Handler(struct dvkm_obj *io)
-{
+{	
+	char *kernel_data_buffer;
 	
-	char *kernel_buffer,*kernel_data_buffer;
-	
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.	
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** copy from user failed..\n");
 		return 0;
@@ -225,11 +199,9 @@ int Heap_OOBW_IOCTL_Handler(struct dvkm_obj *io)
 		INFO("[+] **Data** Copy from user failed..\n");
 		return 0;
 	}	
-	INFO("[+] data: %s\n", kernel_data_buffer);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
+	INFO("[+] data: %s\n", kernel_data_buffer);		
 	//trigger oobw
- 	kernel_buffer[20] = 'A';
-	kfree(kernel_buffer);
+	kernel_data_buffer[k_dvkm_obj.datasize+20] = 'A';
 	kfree(kernel_data_buffer);
 	return 0;
 }
@@ -237,7 +209,7 @@ int Heap_OOBW_IOCTL_Handler(struct dvkm_obj *io)
 //Stack buffer overflow
 noinline int Stack_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 {
-	char kernel_buffer[10] = {0};
+	char kernel_buffer[BUFFER_LEN] = {0};
 	char *kernel_data_buffer;
 	//INFO("[+] Data Length: %d\n", io->datasize);
 	
@@ -268,7 +240,7 @@ noinline int Stack_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 //Stack buffer overflow
 noinline int Stack_OOBR_IOCTL_Handler(struct dvkm_obj *io)
 {
-	char kernel_buffer[10] = {0};
+	char kernel_buffer[BUFFER_LEN] = {0};
 	char *kernel_data_buffer, data;
 	//INFO("[+] Data Length: %d\n", io->datasize);
 
@@ -292,9 +264,9 @@ noinline int Stack_OOBR_IOCTL_Handler(struct dvkm_obj *io)
 		return 0;
 	}	
 	INFO("[+] data: %s\n", k_dvkm_obj.data);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
+	memcpy(kernel_buffer,kernel_data_buffer,BUFFER_LEN);
 	//trigger oobr
-	data = kernel_buffer[20];	
+	data = kernel_buffer[BUFFER_LEN+20];	
 	kfree(kernel_data_buffer);
 	return 0;
 }
@@ -326,9 +298,9 @@ noinline int Stack_OOBW_IOCTL_Handler(struct dvkm_obj *io)
 		return 0;
 	}	
 	INFO("[+] data: %s\n", k_dvkm_obj.data);	
-	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
+	memcpy(kernel_buffer,kernel_data_buffer,BUFFER_LEN);
 	//trigger oobw
-	kernel_buffer[20] = 'A';
+	kernel_buffer[BUFFER_LEN+20] = 'A';
 	kfree(kernel_data_buffer);
 	return 0;
 }
@@ -340,11 +312,6 @@ int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 	char *kernel_buffer, *kernel_data_buffer;	
 	size = 0xFFFFFFFF;
 
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.		
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** Copy from user failed..\n");
 		return 0;
@@ -381,9 +348,8 @@ int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io)
 
 	INFO("[+] calculated size: %d\n", size);
 
-	kernel_buffer =
-		(char *)kmalloc(size, GFP_KERNEL); //we allocate memory here.
-		memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
+	kernel_buffer = (char *)kmalloc(size, GFP_KERNEL); //we allocate memory here.
+	memcpy(kernel_buffer,kernel_data_buffer,k_dvkm_obj.datasize);
 	kfree(kernel_buffer);
 	kfree(kernel_data_buffer);
 	return 0;
@@ -394,13 +360,8 @@ int Integer_Underflow_IOCTL_Handler(struct dvkm_obj *io)
 {
 	int width, height, datasize, size;
 	char *kernel_buffer,*kernel_data_buffer;	
-	size = -0x80000000;
+	size = -0x80000000;	
 	
-	kernel_buffer =	(char *)kmalloc(10, GFP_KERNEL); //we allocate memory here.		
-	if(!kernel_buffer){
-		INFO("[+] kmalloc failed..\n");
-		return 0;
-	}
 	if (copy_from_user(&k_dvkm_obj, io, sizeof(struct dvkm_obj))) {
 		INFO("[+] **Struct** Copy from user failed..\n");
 		return 0;
