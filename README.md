@@ -23,6 +23,8 @@ Feel free to utilize this example kernel module to learn and improve your skills
 2. then use ```sudo insmod dvkm.ko```
 3. if you want to remove use "sudo rmmod dvkm"
 
+## How to test it?
+compile and install dvkm first and then check test_dvkm.c, modify it to suit you needs.
 ## how to fuzz it with syzkaller?
 umm, you need to figure it out at your own. I will create a video/blog later on.
 
