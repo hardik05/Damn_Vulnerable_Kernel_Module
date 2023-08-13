@@ -2,7 +2,13 @@
 Damn Vulenerable Kernel Module for kernel fuzzing
 
 ## what it is?
-Its a example kernel module which you can use to fuzz with syzkaller. It has vulnerable code for various vulnerabilities like integer overflow, integer underflow, use after free, double free. stack/heap overflow, out of bound read/write etc. This is a kernel module created from my another project, Damn Vulnerable C Program: [https://github.com/hardik05/Damn_Vulnerable_C_Program] which was for learning user mode fuzzing. This is for learning kernel mode fuzzing.
+This example kernel module is designed to facilitate fuzzing with syzkaller, an efficient kernel fuzzer. It incorporates deliberately vulnerable code that showcases various types of security vulnerabilities, such as integer overflow, integer underflow, use-after-free, double free, stack and heap overflows, and out-of-bounds read/write scenarios. 
+
+The module has been derived from a previous project of mine, the "Damn Vulnerable C Program" (available at [https://github.com/hardik05/Damn_Vulnerable_C_Program]), which was crafted for the purpose of understanding and practicing user-mode fuzzing techniques. With this kernel module, I intend to provide a learning platform for those interested in exploring kernel-mode fuzzing.
+
+By utilizing this module as a testbed, security researchers and enthusiasts can gain hands-on experience in identifying and mitigating these critical vulnerabilities. It serves as a valuable resource for understanding the inner workings of security flaws in kernel code and devising effective ways to enhance system robustness.
+
+Feel free to utilize this example kernel module to learn and improve your skills in kernel-mode fuzzing and contribute to the broader goal of enhancing kernel security.
 
 ## how to compile and install it?
 ### Compiling Manually
