@@ -25,8 +25,12 @@ Feel free to utilize this example kernel module to learn and improve your skills
 
 ## How to test it?
 compile and install dvkm first and then check test_dvkm.c, modify it to suit you needs.
-## how to fuzz it with syzkaller?
+
+## How to fuzz it with syzkaller?
 umm, you need to figure it out at your own. I will create a video/blog later on.
+
+## How to fuzz it with KAFL?
+[Try this tutorial](https://intellabs.github.io/kAFL/tutorials/linux/dvkm/index.html)
 
 ## I want to contribute.
 Sure, please send PR. 
