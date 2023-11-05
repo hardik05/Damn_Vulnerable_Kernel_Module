@@ -1,7 +1,7 @@
 # Damn_Vulnerable_Kernel_Module
 Damn Vulenerable Kernel Module for kernel fuzzing
 
-## what it is?
+## What it is?
 This example kernel module is designed to facilitate fuzzing with syzkaller, an efficient kernel fuzzer. It incorporates deliberately vulnerable code that showcases various types of security vulnerabilities, such as integer overflow, integer underflow, use-after-free, double free, stack and heap overflows, and out-of-bounds read/write scenarios. 
 
 The module has been derived from a previous project of mine, the "Damn Vulnerable C Program" (available at [https://github.com/hardik05/Damn_Vulnerable_C_Program]), which was crafted for the purpose of understanding and practicing user-mode fuzzing techniques. With this kernel module, I intend to provide a learning platform for those interested in exploring kernel-mode fuzzing.
@@ -10,7 +10,7 @@ By utilizing this module as a testbed, security researchers and enthusiasts can 
 
 Feel free to utilize this example kernel module to learn and improve your skills in kernel-mode fuzzing and contribute to the broader goal of enhancing kernel security.
 
-## how to compile and install it?
+## How to compile and install it?
 ### Compiling Manually
 1. download linux kernel source code.
 2. copy dvkm.c to linux/lib dir.
