@@ -1,5 +1,5 @@
 # Damn_Vulnerable_Kernel_Module
-Damn Vulenerable Kernel Module for kernel fuzzing
+Damn Vulnerable Kernel Module for kernel fuzzing
 
 ## What it is?
 This example kernel module is designed to facilitate fuzzing with syzkaller, an efficient kernel fuzzer. It incorporates deliberately vulnerable code that showcases various types of security vulnerabilities, such as integer overflow, integer underflow, use-after-free, double free, stack and heap overflows, and out-of-bounds read/write scenarios. 
@@ -31,6 +31,9 @@ umm, you need to figure it out at your own. I will create a video/blog later on.
 
 ## How to fuzz it with KAFL?
 [Try this tutorial](https://intellabs.github.io/kAFL/tutorials/linux/dvkm/index.html)
+
+## I have a write up/tutorail for this, can i share it?
+Yes please, i will add it here so that it helps others. you can either send a PR request or just send me a message and i will add link here.
 
 ## I want to contribute.
 Sure, please send PR. 
