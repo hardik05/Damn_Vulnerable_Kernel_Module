@@ -32,7 +32,7 @@ umm, you need to figure it out at your own. I will create a video/blog later on.
 ## How to fuzz it with KAFL?
 [Try this tutorial](https://intellabs.github.io/kAFL/tutorials/linux/dvkm/index.html)
 
-## I have a write up/tutorail for this, can i share it?
+## I have a write up/tutorial for this, can i share it?
 Yes please, i will add it here so that it helps others. you can either send a PR request or just send me a message and i will add link here.
 
 ## I want to contribute.
