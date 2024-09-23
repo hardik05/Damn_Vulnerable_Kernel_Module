@@ -47,6 +47,21 @@ struct dvkm_obj {
 	char *data;
 } k_dvkm_obj;
 
+//prototype
+int Use_after_free_IOCTL_Handler(struct dvkm_obj *io);
+int Double_free_IOCTL_Handler(struct dvkm_obj *io);
+int Heap_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io);
+int Heap_OOBR_IOCTL_Handler(struct dvkm_obj *io);
+int Heap_OOBW_IOCTL_Handler(struct dvkm_obj *io);
+int Stack_Buffer_Overflow_IOCTL_Handler(struct dvkm_obj *io);
+int Stack_OOBR_IOCTL_Handler(struct dvkm_obj *io);
+int Stack_OOBW_IOCTL_Handler(struct dvkm_obj *io);
+int Integer_Overflow_IOCTL_Handler(struct dvkm_obj *io);
+int Integer_Underflow_IOCTL_Handler(struct dvkm_obj *io);
+long dvkm_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
+int dvkm_init(void);
+void dvkm_exit(void);
+
 //use after free
 int Use_after_free_IOCTL_Handler(struct dvkm_obj *io)
 {	
