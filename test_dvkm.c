@@ -64,7 +64,7 @@ int main()
 	io_buffer.data = buf;
   
         printf("Writing Value to Driver\n");
-        ret_val = ioctl(fd, IOCTL(0x2), io_buffer); 
+        ret_val = ioctl(fd, IOCTL(0x2), &io_buffer); 
  
 /*      printf("Reading Value from Driver\n");
         ioctl(fd, RD_VALUE, (int32_t*) &value);
